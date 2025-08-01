@@ -66,156 +66,187 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
     <div class="container">
         <h2>View Complaints</h2>
-        <asp:Label ID="lblMsg" runat="server" CssClass="text-danger" />
-
-        <!-- Tabs -->
-        <ul class="nav nav-tabs">
-            <li class="nav-item">
-                <asp:LinkButton ID="lnkAll" runat="server" CssClass="nav-link" OnClick="lnkAll_Click">All Complaints</asp:LinkButton>
-            </li>
-            <li class="nav-item">
-                <asp:LinkButton ID="lnkOpen" runat="server" CssClass="nav-link" OnClick="lnkOpen_Click">Open Complaints</asp:LinkButton>
-            </li>
-            <li class="nav-item">
-                <asp:LinkButton ID="lnkClosed" runat="server" CssClass="nav-link" OnClick="lnkClosed_Click">Closed Complaints</asp:LinkButton>
-            </li>
-        </ul>
 
         <!-- Filter -->
-        <div class="row mt-3">
-            <div class="col-md-3">
-                <asp:DropDownList ID="ddlCategory" runat="server" CssClass="form-control" AutoPostBack="true" OnSelectedIndexChanged="ddlCategory_SelectedIndexChanged">
-                    <asp:ListItem Text="All Categories" Value="All" />
-                    <asp:ListItem Text="Missing Miles" Value="Missing Miles" />
-                    <asp:ListItem Text="Nominee" Value="Nominee" />
-                    <asp:ListItem Text="Redemption" Value="Redemption" />
-                    <asp:ListItem Text="Service Center (Emails)" Value="Service Center (Emails)" />
-                    <asp:ListItem Text="Other" Value="Other" />
-                </asp:DropDownList>
-            </div>
-            <div class="col-md-3">
-                <asp:DropDownList ID="ddlFilter" runat="server" CssClass="form-control">
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <asp:DropDownList ID="ddlFilterBy" runat="server" CssClass="form-control select2">
                     <asp:ListItem Text="Select Filter" Value="" />
+                    <asp:ListItem Text="Category" Value="Category" />
                     <asp:ListItem Text="Ticket No" Value="TicketNo" />
                     <asp:ListItem Text="Membership No" Value="MembershipNo" />
-                    <asp:ListItem Text="Request Date" Value="RequestDate" />
+                    <asp:ListItem Text="Date" Value="RequestDate" />
                     <asp:ListItem Text="Email" Value="Email" />
-                    <asp:ListItem Text="Forwarded To" Value="ForwardedTo" />
                 </asp:DropDownList>
             </div>
-            <div class="col-md-3">
-                <asp:TextBox ID="txtFilter" runat="server" CssClass="form-control" placeholder="Filter value..." />
+            <div class="col-md-4">
+                <asp:TextBox ID="txtFilter" runat="server" CssClass="form-control" placeholder="Enter filter value..." />
             </div>
-            <div class="col-md-3">
-                <asp:Button ID="btnFilter" runat="server" Text="Go" CssClass="btn btn-success" OnClick="btnFilter_Click" />
+            <div class="col-md-4">
+                <asp:Button ID="btnSearch" runat="server" Text="Go" CssClass="btn btn-success" OnClick="btnSearch_Click" />
             </div>
         </div>
 
         <!-- Grid -->
-        <asp:GridView ID="gvComplaints" runat="server" CssClass="table table-bordered table-striped mt-3" AutoGenerateColumns="False" DataKeyNames="ComplaintID" OnRowCommand="gvComplaints_RowCommand">
+        <asp:GridView ID="gvComplaints" runat="server" CssClass="table table-striped table-bordered" AutoGenerateColumns="False" OnRowCommand="gvComplaints_RowCommand">
             <Columns>
-                <asp:BoundField DataField="MembershipNo" HeaderText="Membership ID" />
-                <asp:BoundField DataField="RequestDate" HeaderText="Request Date" DataFormatString="{0:yyyy-MM-dd}" />
-                <asp:TemplateField HeaderText="Days Left">
+                <asp:BoundField DataField="ComplaintID" HeaderText="S.No" />
+                <asp:BoundField DataField="TicketNo" HeaderText="Ticket No" />
+                <asp:BoundField DataField="Category" HeaderText="Category" />
+                <asp:BoundField DataField="Subject" HeaderText="Subject" />
+                <asp:BoundField DataField="RequestDate" HeaderText="Date" DataFormatString="{0:yyyy-MM-dd}" />
+                <asp:TemplateField HeaderText="Action">
                     <ItemTemplate>
-                        <%# 30 - (DateTime.Now - Convert.ToDateTime(Eval("RequestDate"))).Days %>
+                        <asp:Button ID="btnViewDetails" runat="server" Text="View" CssClass="btn btn-primary btn-sm" CommandName="ViewDetails" CommandArgument='<%# Eval("ComplaintID") %>' />
                     </ItemTemplate>
                 </asp:TemplateField>
-                <asp:BoundField DataField="Subject" HeaderText="Subject" />
-                <asp:BoundField DataField="ForwardedTo" HeaderText="Forwarded To" />
-                <asp:BoundField DataField="Status" HeaderText="Status" />
-                <asp:HyperLinkField Text="View Details" DataNavigateUrlFields="ComplaintID" DataNavigateUrlFormatString="ComplaintDetails.aspx?ComplaintID={0}" HeaderText="Action" />
-                <asp:ButtonField Text="Reply" CommandName="Reply" HeaderText="Reply" ButtonType="Button" ControlStyle-CssClass="btn btn-primary btn-sm" />
-                <asp:ButtonField Text="Forward" CommandName="Forward" HeaderText="Forward" ButtonType="Button" ControlStyle-CssClass="btn btn-warning btn-sm" />
             </Columns>
         </asp:GridView>
 
-        <!-- Reply Modal -->
-        <asp:Panel ID="pnlReply" runat="server" CssClass="modal fade" Style="display: none;" ClientIDMode="Static">
+        <!-- Complaint Details Modal -->
+        <asp:Panel ID="pnlComplaintDetails" runat="server" CssClass="modal fade" Style="display: none;" ClientIDMode="Static">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header bg-darkgreen">
-                        <h5 class="modal-title">Reply to Complaint</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h5 class="modal-title">Complaint Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="form-group">
-                            <label for="txtReplyTo">To</label>
-                            <asp:TextBox ID="txtReplyTo" runat="server" CssClass="form-control" ReadOnly="true" />
-                        </div>
-                        <div class="form-group">
-                            <label for="txtReplyFrom">From</label>
-                            <asp:TextBox ID="txtReplyFrom" runat="server" CssClass="form-control" ReadOnly="true" />
-                        </div>
-                        <div class="form-group">
-                            <label for="txtReplySubject">Subject</label>
-                            <asp:TextBox ID="txtReplySubject" runat="server" CssClass="form-control" />
-                        </div>
-                        <div class="form-group">
-                            <label for="txtReplyBody">Body</label>
-                            <asp:TextBox ID="txtReplyBody" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="5" />
-                        </div>
+                        <div id="complaintDetailsContent" runat="server" ClientIDMode="Static"></div>
                     </div>
                     <div class="modal-footer">
-                        <asp:Button ID="btnSendReply" runat="server" Text="Send Reply" CssClass="btn btn-success" OnClick="btnSendReply_Click" />
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="redirectToReply();">Reply</button>
+                        <button type="button" class="btn btn-info" onclick="showForwardModal();">Forward</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
         </asp:Panel>
 
         <!-- Forward Modal -->
-        <asp:Panel ID="pnlForward" runat="server" CssClass="modal fade" Style="display: none;" ClientIDMode="Static">
+        <asp:Panel ID="pnlForwardComplaint" runat="server" CssClass="modal fade" Style="display: none;" ClientIDMode="Static">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header bg-darkgreen">
                         <h5 class="modal-title">Forward Complaint</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="ddlForwardTo">Forward To</label>
-                            <asp:DropDownList ID="ddlForwardTo" runat="server" CssClass="form-control select2" />
+                            <label>Select Admin:</label>
+                            <asp:DropDownList ID="ddlForwardTo" runat="server" CssClass="form-control select2" onchange="updateForwardEmail();">
+                            </asp:DropDownList>
                         </div>
                         <div class="form-group">
-                            <label for="txtForwardRemarks">Forward Remarks</label>
-                            <asp:TextBox ID="txtForwardRemarks" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3" />
+                            <label>To (Email):</label>
+                            <asp:TextBox ID="txtForwardEmail" runat="server" CssClass="form-control" ReadOnly="true" />
+                        </div>
+                        <div class="form-group">
+                            <label>Subject:</label>
+                            <asp:TextBox ID="txtForwardSubject" runat="server" CssClass="form-control" ReadOnly="true" />
+                        </div>
+                        <div class="form-group">
+                            <label>Forward Remarks:</label>
+                            <asp:TextBox ID="txtForwardRemarks" runat="server" TextMode="MultiLine" CssClass="form-control" Rows="3" />
+                        </div>
+                        <div class="form-group">
+                            <label>Complaint Details:</label>
+                            <asp:TextBox ID="txtForwardBody" runat="server" TextMode="MultiLine" CssClass="form-control" Rows="5" ReadOnly="true" />
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <asp:Button ID="btnSendForward" runat="server" Text="Forward" CssClass="btn btn-warning" OnClick="btnSendForward_Click" />
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <asp:Button ID="btnForwardSend" runat="server" Text="Send" CssClass="btn btn-primary" OnClick="btnForwardSend_Click" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
         </asp:Panel>
 
-        <asp:HiddenField ID="hfComplaintID" runat="server" />
-
-        <script>
+        <script type="text/javascript">
             $(document).ready(function () {
-                $('.select2').select2();
+                try {
+                    $('.select2').select2();
+                } catch (e) {
+                    console.error('Error initializing Select2: ', e);
+                }
             });
 
-            function showReplyModal() {
+            function showComplaintDetailsModal(complaintId) {
                 try {
-                    $('#pnlReply').modal('show');
-                    console.log('Reply modal opened');
+                    $.ajax({
+                        url: 'ComplaintDetails.aspx/GetComplaintDetails',
+                        type: 'POST',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify({ complaintId: complaintId }),
+                        dataType: 'json',
+                        success: function (response) {
+                            $('#complaintDetailsContent').html(response.d);
+                            $('#pnlComplaintDetails').modal('show').data('complaintId', complaintId);
+                            console.log('Complaint details modal opened');
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error loading complaint details: ', error);
+                            alert('Error loading complaint details. Check console for details.');
+                        }
+                    });
                 } catch (e) {
-                    console.error('Error opening reply modal: ', e);
-                    alert('Error opening reply modal. Check console for details.');
+                    console.error('Error opening complaint details modal: ', e);
+                    alert('Error opening complaint details modal. Check console for details.');
                 }
+            }
+
+            function redirectToReply() {
+                var complaintId = $('#pnlComplaintDetails').data('complaintId');
+                window.location.href = 'ReplyComplaint.aspx?complaintId=' + complaintId;
+                return false;
             }
 
             function showForwardModal() {
                 try {
-                    $('#pnlForward').modal('show');
-                    console.log('Forward modal opened');
+                    var complaintId = $('#pnlComplaintDetails').data('complaintId');
+                    $.ajax({
+                        url: 'ViewComplaints.aspx/GetForwardData',
+                        type: 'POST',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify({ complaintId: complaintId }),
+                        dataType: 'json',
+                        success: function (response) {
+                            $('#<%= txtForwardSubject.ClientID %>').val(response.d.subject);
+                            $('#<%= txtForwardBody.ClientID %>').val(response.d.body);
+                            $('#pnlForwardComplaint').modal('show').data('complaintId', complaintId);
+                            console.log('Forward modal opened');
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error loading forward data: ', error);
+                            alert('Error loading forward data. Check console for details.');
+                        }
+                    });
                 } catch (e) {
                     console.error('Error opening forward modal: ', e);
                     alert('Error opening forward modal. Check console for details.');
                 }
             }
+
+            function updateForwardEmail() {
+                var adminId = $('#<%= ddlForwardTo.ClientID %>').val();
+                if (adminId) {
+                    $.ajax({
+                        url: 'ViewComplaints.aspx/GetAdminEmail',
+                        type: 'POST',
+                        contentType: 'application/json; charset=utf-8',
+                        data: JSON.stringify({ adminId: adminId }),
+                        dataType: 'json',
+                        success: function (response) {
+                            $('#<%= txtForwardEmail.ClientID %>').val(response.d);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Error fetching admin email: ', error);
+                            alert('Error fetching admin email. Check console for details.');
+                        }
+                    });
+                } else {
+                    $('#<%= txtForwardEmail.ClientID %>').val('');
+                }
+            }
         </script>
-    </div>
-</asp:Content>
+    </asp:Content>

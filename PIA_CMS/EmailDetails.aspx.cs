@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Web.UI;
+using System.Web.Services;
 
 namespace PIA_CMS
 {
@@ -76,9 +77,47 @@ namespace PIA_CMS
             }
         }
 
-        protected void btnBack_Click(object sender, EventArgs e)
+        [WebMethod]
+        public static string GetEmailDetails(int emailId)
         {
-            Response.Redirect("ViewEmails.aspx");
+            try
+            {
+                string connectionString = ConfigurationManager.ConnectionStrings["dbConn"].ConnectionString;
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    string query = "SELECT EmailFrom, EmailTo, EmailSubject, EmailBody, SentDate, MembershipNo, UserID FROM EmailsSent WHERE EmailID = @EmailID";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@EmailID", emailId);
+                        con.Open();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                return $"<div class='card'>" +
+                                       "<div class='card-header'>Email Information</div>" +
+                                       "<div class='card-body'>" +
+                                       $"<strong>From:</strong> {reader["EmailFrom"]}<br/>" +
+                                       $"<strong>To:</strong> {reader["EmailTo"]}<br/>" +
+                                       $"<strong>Subject:</strong> {reader["EmailSubject"]}<br/>" +
+                                       $"<strong>Body:</strong> {reader["EmailBody"]}<br/>" +
+                                       $"<strong>Sent:</strong> {reader["SentDate"]}<br/>" +
+                                       $"<strong>Membership No:</strong> {reader["MembershipNo"]}<br/>" +
+                                       $"<strong>User ID:</strong> {reader["UserID"]}" +
+                                       "</div></div>";
+                            }
+                            else
+                            {
+                                return "<div class='alert alert-danger'>Email not found.</div>";
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return $"<div class='alert alert-danger'>Error loading email details: {ex.Message}</div>";
+            }
         }
     }
 }

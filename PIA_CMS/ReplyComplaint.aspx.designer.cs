@@ -11,17 +11,8 @@ namespace PIA_CMS
 {
 
 
-    public partial class ComplaintDetails
+    public partial class ReplyComplaint
     {
-
-        /// <summary>
-        /// form1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
         /// lblMsg control.
@@ -33,39 +24,39 @@ namespace PIA_CMS
         protected global::System.Web.UI.WebControls.Label lblMsg;
 
         /// <summary>
-        /// hfComplaintID control.
+        /// txtEmailTo control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hfComplaintID;
+        protected global::System.Web.UI.WebControls.TextBox txtEmailTo;
 
         /// <summary>
-        /// lblComplaintDetails control.
+        /// txtSubject control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblComplaintDetails;
+        protected global::System.Web.UI.WebControls.TextBox txtSubject;
 
         /// <summary>
-        /// btnReply control.
+        /// txtBody control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnReply;
+        protected global::System.Web.UI.WebControls.TextBox txtBody;
 
         /// <summary>
-        /// btnForward control.
+        /// btnSend control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnForward;
+        protected global::System.Web.UI.WebControls.Button btnSend;
     }
 }

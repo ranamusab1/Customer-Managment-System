@@ -15,58 +15,13 @@ namespace PIA_CMS
     {
 
         /// <summary>
-        /// lblMsg control.
+        /// ddlFilterBy control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblMsg;
-
-        /// <summary>
-        /// lnkAll control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton lnkAll;
-
-        /// <summary>
-        /// lnkOpen control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton lnkOpen;
-
-        /// <summary>
-        /// lnkClosed control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton lnkClosed;
-
-        /// <summary>
-        /// ddlCategory control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlCategory;
-
-        /// <summary>
-        /// ddlFilter control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlFilter;
+        protected global::System.Web.UI.WebControls.DropDownList ddlFilterBy;
 
         /// <summary>
         /// txtFilter control.
@@ -78,13 +33,13 @@ namespace PIA_CMS
         protected global::System.Web.UI.WebControls.TextBox txtFilter;
 
         /// <summary>
-        /// btnFilter control.
+        /// btnSearch control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnFilter;
+        protected global::System.Web.UI.WebControls.Button btnSearch;
 
         /// <summary>
         /// gvComplaints control.
@@ -96,67 +51,31 @@ namespace PIA_CMS
         protected global::System.Web.UI.WebControls.GridView gvComplaints;
 
         /// <summary>
-        /// pnlReply control.
+        /// pnlComplaintDetails control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlReply;
+        protected global::System.Web.UI.WebControls.Panel pnlComplaintDetails;
 
         /// <summary>
-        /// txtReplyTo control.
+        /// complaintDetailsContent control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtReplyTo;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl complaintDetailsContent;
 
         /// <summary>
-        /// txtReplyFrom control.
+        /// pnlForwardComplaint control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtReplyFrom;
-
-        /// <summary>
-        /// txtReplySubject control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtReplySubject;
-
-        /// <summary>
-        /// txtReplyBody control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtReplyBody;
-
-        /// <summary>
-        /// btnSendReply control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSendReply;
-
-        /// <summary>
-        /// pnlForward control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlForward;
+        protected global::System.Web.UI.WebControls.Panel pnlForwardComplaint;
 
         /// <summary>
         /// ddlForwardTo control.
@@ -168,6 +87,24 @@ namespace PIA_CMS
         protected global::System.Web.UI.WebControls.DropDownList ddlForwardTo;
 
         /// <summary>
+        /// txtForwardEmail control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtForwardEmail;
+
+        /// <summary>
+        /// txtForwardSubject control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtForwardSubject;
+
+        /// <summary>
         /// txtForwardRemarks control.
         /// </summary>
         /// <remarks>
@@ -177,21 +114,21 @@ namespace PIA_CMS
         protected global::System.Web.UI.WebControls.TextBox txtForwardRemarks;
 
         /// <summary>
-        /// btnSendForward control.
+        /// txtForwardBody control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSendForward;
+        protected global::System.Web.UI.WebControls.TextBox txtForwardBody;
 
         /// <summary>
-        /// hfComplaintID control.
+        /// btnForwardSend control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.HiddenField hfComplaintID;
+        protected global::System.Web.UI.WebControls.Button btnForwardSend;
     }
 }

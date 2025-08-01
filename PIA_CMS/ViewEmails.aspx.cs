@@ -50,8 +50,15 @@ namespace PIA_CMS
         {
             if (e.CommandName == "ViewDetails")
             {
-                int emailId = Convert.ToInt32(e.CommandArgument);
-                Response.Redirect($"EmailDetails.aspx?EmailID={emailId}");
+                try
+                {
+                    int emailId = Convert.ToInt32(e.CommandArgument);
+                    ScriptManager.RegisterStartupScript(this, GetType(), "showEmailDetailsModal", $"showEmailDetailsModal({emailId});", true);
+                }
+                catch (Exception ex)
+                {
+                    ScriptManager.RegisterStartupScript(this, GetType(), "errorAlert", $"alert('Error opening email details: {ex.Message}');", true);
+                }
             }
         }
     }

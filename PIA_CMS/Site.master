@@ -155,9 +155,12 @@
         <!-- JavaScript for nested dropdowns -->
         <script>
             $(document).ready(function () {
-                $('.select2').select2();
+                try {
+                    $('.select2').select2();
+                } catch (e) {
+                    console.error('Error initializing Select2: ', e);
+                }
 
-                // Handle nested dropdowns
                 $('.dropdown-submenu a.dropdown-toggle').on('click', function (e) {
                     if (!$(this).next('ul').hasClass('show')) {
                         $(this).parents('.dropdown-menu').first().find('.show').removeClass('show');
@@ -170,7 +173,6 @@
                     return false;
                 });
 
-                // Prevent dropdown from closing when clicking inside submenu
                 $('.dropdown-menu').on('click', function (e) {
                     e.stopPropagation();
                 });
