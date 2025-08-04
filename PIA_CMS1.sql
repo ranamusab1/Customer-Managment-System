@@ -5,10 +5,11 @@ GO
 USE PIA_CMS;
 GO
 
--- Admins Table
+-- Admins Table (Updated with Name column)
 CREATE TABLE Admins (
     AdminID INT IDENTITY PRIMARY KEY,
     Username NVARCHAR(50),
+    Name NVARCHAR(100), -- Added Name field
     Email NVARCHAR(100),
     Password NVARCHAR(50)
 );
@@ -54,16 +55,23 @@ CREATE TABLE Complaints (
 );
 
 -- Insert Sample Data
-INSERT INTO Admins (Username, Email, Password)
+INSERT INTO Admins (Username, Name, Email, Password)
 VALUES 
-('admin1', 'admin1@pia.com', 'pass123'),
-('admin2', 'admin2@pia.com', 'pass456');
+('admin1', 'Rana Musab', 'admin1@pia.com', 'pass123'),
+('admin2', 'Abdullah Rashid', 'admin2@pia.com', 'pass456');
+
+SELECT * FROM Admins;
 
 INSERT INTO Complaints (TicketNo, MembershipNo, RequestDate, Category, Subject, Status, Email, ReceivedFrom, Body)
 VALUES 
 (1001, 'PIA123456', GETDATE()-10, 'Missing Miles', 'Missing miles on flight PK123', 'O', 'customer@pia.com', 'Customer', 'Dear PIA, I did not receive miles for my recent flight.'),
 (1002, 'PIA789012', GETDATE()-5, 'Redemption', 'Upgrade issue', 'O', 'customer2@pia.com', 'Customer', 'Unable to upgrade my ticket.');
 
+SELECT * FROM Complaints;
+
 INSERT INTO EmailsSent (UserID, EmailFrom, EmailTo, EmailSubject, EmailBody, SentDate, MembershipNo)
 VALUES 
 ('admin1', 'admin@pia.com', 'customer@pia.com', 'Re: Missing Miles', 'We are looking into your issue.', GETDATE()-1, 'PIA123456');
+
+SELECT * FROM EmailsSent;
+drop table Complaints;

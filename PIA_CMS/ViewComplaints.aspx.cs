@@ -1,14 +1,21 @@
-﻿using System;
+﻿
+using System;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.Services;
+using System.IO;
+using System.Text;
+using System.Web;
+using System.Linq;
 
 namespace PIA_CMS
 {
     public partial class ViewComplaints : Page
     {
+        private static readonly string DataPath = @"C:\PIA\";
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["AdminUser"] == null)
@@ -28,7 +35,7 @@ namespace PIA_CMS
             string category = Request.QueryString["cat"] ?? "All";
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                string query = "SELECT ComplaintID, TicketNo, Category, Subject, RequestDate, MembershipNo, Email FROM Complaints";
+                string query = "SELECT ComplaintID, TicketNo, Category, Subject, RequestDate, ForwardedTo FROM Complaints";
                 if (category != "All" || !string.IsNullOrEmpty(ddlFilterBy.SelectedValue))
                 {
                     query += " WHERE ";
@@ -94,59 +101,19 @@ namespace PIA_CMS
             }
         }
 
-        protected void btnForwardSend_Click(object sender, EventArgs e)
+        protected void btnReplySend_Click(object sender, EventArgs e)
         {
             try
             {
                 string connectionString = ConfigurationManager.ConnectionStrings["dbConn"].ConnectionString;
+                int complaintId = int.Parse(Request.Form["pnlComplaintDetails$ctl00"] ?? "0");
+                string ticketNo = "";
+                string membershipNo = "";
+
+                // Get TicketNo and MembershipNo
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
-                    // Update Complaints table with forward details
-                    string updateQuery = "UPDATE Complaints SET ForwardedTo = @ForwardedTo, ForwardedDate = @ForwardedDate, ForwardRemarks = @ForwardRemarks, ForwardedBy = @ForwardedBy WHERE ComplaintID = @ComplaintID";
-                    using (SqlCommand cmd = new SqlCommand(updateQuery, con))
-                    {
-                        cmd.Parameters.AddWithValue("@ForwardedTo", ddlForwardTo.SelectedItem.Text);
-                        cmd.Parameters.AddWithValue("@ForwardedDate", DateTime.Now);
-                        cmd.Parameters.AddWithValue("@ForwardRemarks", txtForwardRemarks.Text);
-                        cmd.Parameters.AddWithValue("@ForwardedBy", Session["AdminUser"].ToString());
-                        cmd.Parameters.AddWithValue("@ComplaintID", Request.Form["pnlForwardComplaint$ctl00"] ?? "0");
-                        con.Open();
-                        cmd.ExecuteNonQuery();
-                        con.Close();
-                    }
-
-                    // Insert into EmailsSent
-                    string insertQuery = "INSERT INTO EmailsSent (EmailFrom, EmailTo, EmailSubject, EmailBody, SentDate, UserID, MembershipNo) VALUES (@EmailFrom, @EmailTo, @EmailSubject, @EmailBody, @SentDate, @UserID, @MembershipNo)";
-                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
-                    {
-                        cmd.Parameters.AddWithValue("@EmailFrom", Session["AdminUser"].ToString() + "@pia.com");
-                        cmd.Parameters.AddWithValue("@EmailTo", txtForwardEmail.Text);
-                        cmd.Parameters.AddWithValue("@EmailSubject", txtForwardSubject.Text);
-                        cmd.Parameters.AddWithValue("@EmailBody", txtForwardRemarks.Text + "\n\n" + txtForwardBody.Text);
-                        cmd.Parameters.AddWithValue("@SentDate", DateTime.Now);
-                        cmd.Parameters.AddWithValue("@UserID", ddlForwardTo.SelectedValue);
-                        cmd.Parameters.AddWithValue("@MembershipNo", "");
-                        con.Open();
-                        cmd.ExecuteNonQuery();
-                    }
-                }
-                ScriptManager.RegisterStartupScript(this, GetType(), "successAlert", "alert('Complaint forwarded successfully.'); $('#pnlForwardComplaint').modal('hide');", true);
-            }
-            catch (Exception ex)
-            {
-                ScriptManager.RegisterStartupScript(this, GetType(), "errorAlert", $"alert('Error forwarding complaint: {ex.Message}');", true);
-            }
-        }
-
-        [WebMethod]
-        public static object GetForwardData(int complaintId)
-        {
-            try
-            {
-                string connectionString = ConfigurationManager.ConnectionStrings["dbConn"].ConnectionString;
-                using (SqlConnection con = new SqlConnection(connectionString))
-                {
-                    string query = "SELECT Subject, Body, MembershipNo FROM Complaints WHERE ComplaintID = @ComplaintID";
+                    string query = "SELECT TicketNo, MembershipNo FROM Complaints WHERE ComplaintID = @ComplaintID";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
                         cmd.Parameters.AddWithValue("@ComplaintID", complaintId);
@@ -155,15 +122,174 @@ namespace PIA_CMS
                         {
                             if (reader.Read())
                             {
+                                ticketNo = reader["TicketNo"].ToString();
+                                membershipNo = reader["MembershipNo"].ToString();
+                            }
+                        }
+                    }
+                }
+
+                // Save to EmailsSent
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    string query = "INSERT INTO EmailsSent (EmailFrom, EmailTo, EmailSubject, EmailBody, SentDate, UserID, MembershipNo) VALUES (@EmailFrom, @EmailTo, @EmailSubject, @EmailBody, @SentDate, @UserID, @MembershipNo)";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@EmailFrom", Session["AdminUser"].ToString() + "@pia.com");
+                        cmd.Parameters.AddWithValue("@EmailTo", txtReplyEmail.Text);
+                        cmd.Parameters.AddWithValue("@EmailSubject", txtReplySubject.Text);
+                        cmd.Parameters.AddWithValue("@EmailBody", txtReplyBody.Text);
+                        cmd.Parameters.AddWithValue("@SentDate", DateTime.Now);
+                        cmd.Parameters.AddWithValue("@UserID", Session["AdminUser"].ToString());
+                        cmd.Parameters.AddWithValue("@MembershipNo", membershipNo);
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                // Append to .txt file
+                string filePath = Path.Combine(DataPath, $"{ticketNo}.txt");
+                string replyContent = $"\n\n--- Reply by {Session["AdminUser"]} on {DateTime.Now:yyyy-MM-dd HH:mm:ss} ---\nSubject: {txtReplySubject.Text}\nBody: {txtReplyBody.Text}";
+                File.AppendAllText(filePath, replyContent);
+
+                ScriptManager.RegisterStartupScript(this, GetType(), "successAlert", "alert('Reply sent successfully.'); $('#pnlComplaintDetails').modal('hide');", true);
+            }
+            catch (Exception ex)
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "errorAlert", $"alert('Error sending reply: {ex.Message}');", true);
+            }
+        }
+
+        protected void btnForwardSend_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                string connectionString = ConfigurationManager.ConnectionStrings["dbConn"].ConnectionString;
+                int complaintId = int.Parse(Request.Form["pnlComplaintDetails$ctl00"] ?? "0");
+                string ticketNo = "";
+                string membershipNo = "";
+                string subject = "";
+                string body = "";
+
+                // Get TicketNo, MembershipNo, Subject, Body
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    string query = "SELECT TicketNo, MembershipNo, Subject, Body FROM Complaints WHERE ComplaintID = @ComplaintID";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ComplaintID", complaintId);
+                        con.Open();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                ticketNo = reader["TicketNo"].ToString();
+                                membershipNo = reader["MembershipNo"].ToString();
+                                subject = reader["Subject"].ToString();
+                                body = reader["Body"].ToString();
+                            }
+                        }
+                    }
+                }
+
+                // Update Complaints table
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    string updateQuery = "UPDATE Complaints SET ForwardedTo = @ForwardedTo, ForwardedDate = @ForwardedDate, ForwardRemarks = @ForwardRemarks, ForwardedBy = @ForwardedBy WHERE ComplaintID = @ComplaintID";
+                    using (SqlCommand cmd = new SqlCommand(updateQuery, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ForwardedTo", ddlForwardTo.SelectedItem.Text);
+                        cmd.Parameters.AddWithValue("@ForwardedDate", DateTime.Now);
+                        cmd.Parameters.AddWithValue("@ForwardRemarks", txtForwardRemarks.Text);
+                        cmd.Parameters.AddWithValue("@ForwardedBy", Session["AdminUser"].ToString());
+                        cmd.Parameters.AddWithValue("@ComplaintID", complaintId);
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                // Save to EmailsSent
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    string insertQuery = "INSERT INTO EmailsSent (EmailFrom, EmailTo, EmailSubject, EmailBody, SentDate, UserID, MembershipNo) VALUES (@EmailFrom, @EmailTo, @EmailSubject, @EmailBody, @SentDate, @UserID, @MembershipNo)";
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, con))
+                    {
+                        cmd.Parameters.AddWithValue("@EmailFrom", Session["AdminUser"].ToString() + "@pia.com");
+                        cmd.Parameters.AddWithValue("@EmailTo", txtForwardEmail.Text);
+                        cmd.Parameters.AddWithValue("@EmailSubject", $"Fwd: {subject}");
+                        cmd.Parameters.AddWithValue("@EmailBody", txtForwardRemarks.Text + $"\n\n--- Forwarded Complaint ---\nSubject: {subject}\nDetails: {body}\nMembership No: {membershipNo}");
+                        cmd.Parameters.AddWithValue("@SentDate", DateTime.Now);
+                        cmd.Parameters.AddWithValue("@UserID", ddlForwardTo.SelectedValue);
+                        cmd.Parameters.AddWithValue("@MembershipNo", membershipNo);
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+
+                // Append to .txt file
+                string filePath = Path.Combine(DataPath, $"{ticketNo}.txt");
+                string forwardContent = $"\n\n--- Forwarded by {Session["AdminUser"]} to {ddlForwardTo.SelectedItem.Text} on {DateTime.Now:yyyy-MM-dd HH:mm:ss} ---\nRemarks: {txtForwardRemarks.Text}\nSubject: Fwd: {subject}\nBody: {body}";
+                File.AppendAllText(filePath, forwardContent);
+
+                ScriptManager.RegisterStartupScript(this, GetType(), "successAlert", "alert('Complaint forwarded successfully.'); $('#pnlComplaintDetails').modal('hide');", true);
+            }
+            catch (Exception ex)
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "errorAlert", $"alert('Error forwarding complaint: {ex.Message}');", true);
+            }
+        }
+
+        [WebMethod]
+        public static object GetComplaintDetails(int complaintId)
+        {
+            try
+            {
+                string connectionString = ConfigurationManager.ConnectionStrings["dbConn"].ConnectionString;
+                string ticketNo = "";
+                string email = "";
+                string subject = "";
+                string body = "";
+                string membershipNo = "";
+
+                // Fetch complaint details
+                using (SqlConnection con = new SqlConnection(connectionString))
+                {
+                    string query = "SELECT TicketNo, MembershipNo, Category, Subject, Body, RequestDate, Email, Status, ReceivedFrom FROM Complaints WHERE ComplaintID = @ComplaintID";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@ComplaintID", complaintId);
+                        con.Open();
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                ticketNo = reader["TicketNo"].ToString();
+                                membershipNo = reader["MembershipNo"].ToString();
+                                email = reader["Email"].ToString();
+                                subject = reader["Subject"].ToString();
+                                body = reader["Body"].ToString();
                                 return new
                                 {
-                                    subject = $"Fwd: {reader["Subject"]}",
-                                    body = $"--- Forwarded Complaint ---\nSubject: {reader["Subject"]}\nDetails: {reader["Body"]}\nMembership No: {reader["MembershipNo"]}"
+                                    details = $"<div class='card'><div class='card-header'>Complaint Information</div><div class='card-body'>" +
+                                              $"<strong>Ticket No:</strong> {reader["TicketNo"]}<br/>" +
+                                              $"<strong>Membership No:</strong> {reader["MembershipNo"]}<br/>" +
+                                              $"<strong>Category:</strong> {reader["Category"]}<br/>" +
+                                              $"<strong>Subject:</strong> {reader["Subject"]}<br/>" +
+                                              $"<strong>Details:</strong> {reader["Body"]}<br/>" +
+                                              $"<strong>Date:</strong> {reader["RequestDate"]}<br/>" +
+                                              $"<strong>Email:</strong> {reader["Email"]}<br/>" +
+                                              $"<strong>Status:</strong> {(reader["Status"].ToString() == "O" ? "Open" : "Closed")}<br/>" +
+                                              $"<strong>Received From:</strong> {reader["ReceivedFrom"]}</div></div>",
+                                    conversation = GetConversation(ticketNo),
+                                    attachments = GetAttachments(ticketNo),
+                                    email = email,
+                                    replySubject = $"Re: {subject}",
+                                    replyBody = $"\n\n--- Original Complaint ---\nSubject: {subject}\nDetails: {body}\nMembership No: {membershipNo}"
                                 };
                             }
                             else
                             {
-                                return new { subject = "", body = "<div class='alert alert-danger'>Complaint not found.</div>" };
+                                return new { details = "<div class='alert alert-danger'>Complaint not found.</div>", conversation = "", attachments = "", email = "", replySubject = "", replyBody = "" };
                             }
                         }
                     }
@@ -171,7 +297,8 @@ namespace PIA_CMS
             }
             catch (Exception ex)
             {
-                return new { subject = "", body = $"<div class='alert alert-danger'>Error: {ex.Message}</div>" };
+                System.Diagnostics.Debug.WriteLine($"Error in GetComplaintDetails: {ex.Message}");
+                return new { details = $"<div class='alert alert-danger'>Error: {ex.Message}</div>", conversation = "", attachments = "", email = "", replySubject = "", replyBody = "" };
             }
         }
 
@@ -195,7 +322,69 @@ namespace PIA_CMS
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"Error in GetAdminEmail: {ex.Message}");
                 return "";
+            }
+        }
+
+        private static string GetConversation(string ticketNo)
+        {
+            try
+            {
+                string filePath = Path.Combine(DataPath, $"{ticketNo}.txt");
+                System.Diagnostics.Debug.WriteLine($"Reading conversation file: {filePath}");
+                if (File.Exists(filePath))
+                {
+                    return File.ReadAllText(filePath);
+                }
+                return "No conversation found.";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in GetConversation: {ex.Message}");
+                return $"Error loading conversation: {ex.Message}";
+            }
+        }
+
+        private static string GetAttachments(string ticketNo)
+        {
+            try
+            {
+                string folderPath = Path.Combine(DataPath, ticketNo);
+                System.Diagnostics.Debug.WriteLine($"Checking folder: {folderPath}");
+                if (Directory.Exists(folderPath))
+                {
+                    string[] files = Directory.GetFiles(folderPath);
+                    System.Diagnostics.Debug.WriteLine($"Found {files.Length} files in {folderPath}");
+                    StringBuilder html = new StringBuilder();
+                    foreach (string file in files)
+                    {
+                        string fileName = Path.GetFileName(file);
+                        string relativePath = $"/ComplaintData/{ticketNo}/{fileName}";
+                        string ext = Path.GetExtension(fileName).ToLower();
+                        System.Diagnostics.Debug.WriteLine($"Processing file: {fileName}, Ext: {ext}, Path: {relativePath}");
+                        if (new[] { ".jpg", ".jpeg", ".png", ".gif" }.Contains(ext))
+                        {
+                            html.Append($"<img src='{relativePath}' class='attachment-img' onclick='showFullSizeAttachment(\"{relativePath}\")' alt='{fileName}' />");
+                        }
+                        else if (ext == ".pdf")
+                        {
+                            html.Append($"<div class='attachment-pdf' onclick='showFullSizeAttachment(\"{relativePath}\")'>{fileName}</div>");
+                        }
+                        else
+                        {
+                            html.Append($"<a href='{relativePath}' target='_blank' class='btn btn-sm btn-secondary m-1'>{fileName}</a>");
+                        }
+                    }
+                    return html.ToString();
+                }
+                System.Diagnostics.Debug.WriteLine($"Folder not found: {folderPath}");
+                return "No attachments found.";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in GetAttachments: {ex.Message}");
+                return $"Error loading attachments: {ex.Message}";
             }
         }
     }

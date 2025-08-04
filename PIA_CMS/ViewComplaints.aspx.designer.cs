@@ -69,13 +69,40 @@ namespace PIA_CMS
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl complaintDetailsContent;
 
         /// <summary>
-        /// pnlForwardComplaint control.
+        /// txtReplyEmail control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlForwardComplaint;
+        protected global::System.Web.UI.WebControls.TextBox txtReplyEmail;
+
+        /// <summary>
+        /// txtReplySubject control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtReplySubject;
+
+        /// <summary>
+        /// txtReplyBody control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtReplyBody;
+
+        /// <summary>
+        /// btnReplySend control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnReplySend;
 
         /// <summary>
         /// ddlForwardTo control.
@@ -96,15 +123,6 @@ namespace PIA_CMS
         protected global::System.Web.UI.WebControls.TextBox txtForwardEmail;
 
         /// <summary>
-        /// txtForwardSubject control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtForwardSubject;
-
-        /// <summary>
         /// txtForwardRemarks control.
         /// </summary>
         /// <remarks>
@@ -112,15 +130,6 @@ namespace PIA_CMS
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtForwardRemarks;
-
-        /// <summary>
-        /// txtForwardBody control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtForwardBody;
 
         /// <summary>
         /// btnForwardSend control.

@@ -75,6 +75,15 @@
     <Content Include="pialogo.png" />
     <Content Include="pialogo1.png" />
     <Content Include="pialogo2.png" />
+    <Content Include="PIA\.txt" />
+    <Content Include="PIA\1001.html" />
+    <Content Include="PIA\1001.txt" />
+    <Content Include="PIA\1001\1001.jpg" />
+    <Content Include="PIA\1002.html" />
+    <Content Include="PIA\1002.txt" />
+    <Content Include="PIA\1002\Lahore_Baku_2025.jpg" />
+    <Content Include="PIA\1002\Lahore_Skardu_2025.jpg" />
+    <Content Include="ReceiveEmail.aspx" />
     <Content Include="ReplyComplaint.aspx" />
     <Content Include="SendEmail.aspx" />
     <Content Include="Support.aspx" />
@@ -112,6 +121,13 @@
       <DependentUpon>Login.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReceiveEmail.aspx.cs">
+      <DependentUpon>ReceiveEmail.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReceiveEmail.aspx.designer.cs">
+      <DependentUpon>ReceiveEmail.aspx</DependentUpon>
+    </Compile>
     <Compile Include="ReplyComplaint.aspx.cs">
       <DependentUpon>ReplyComplaint.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
