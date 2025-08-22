@@ -3,8 +3,7 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <style>
         .container-flex {
-            background: linear-gradient(to right, rgb(128 128 128 / 0.71), rgb(128 128 128 / 0.71)),
-                        url('piabanner.jpg') no-repeat center center;
+            background: linear-gradient(to right, rgb(128 128 128 / 0.71), rgb(128 128 128 / 0.71)), url('piabanner.jpg') no-repeat center center;
             background-size: cover;
             min-height: calc(100vh - 100px);
             display: flex;

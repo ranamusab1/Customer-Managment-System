@@ -6,10 +6,7 @@
     <meta charset="UTF-8" />
     <title>PIA Award+Plus Admin Login</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-
+    <link href="bootstrap.min.css" rel="stylesheet" />
     <style>
         body {
             background-color: darkgreen;
@@ -20,10 +17,8 @@
             justify-content: center;
             align-items: center;
         }
-
         .login-card {
             background-color: #fff;
-            width: 900px !important;
             padding: 30px 35px;
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
@@ -31,30 +26,25 @@
             max-width: 420px;
             text-align: center;
         }
-
         .login-card img {
             width: 200px;
             margin-bottom: 15px;
         }
-
         .login-card h2 {
             font-size: 24px;
             font-weight: 600;
             color: #004d40;
             margin-bottom: 10px;
         }
-
         .login-card p {
             font-size: 14px;
             color: #666;
             margin-bottom: 20px;
         }
-
         .form-control {
             border-radius: 6px;
             font-size: 14px;
         }
-
         .btn-login {
             background-color: darkgreen;
             color: white;
@@ -64,13 +54,11 @@
             width: 100%;
             transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;
         }
-
         .btn-login:hover {
             background-color: white;
             color: darkgreen;
             border-color: darkgreen;
         }
-
         .text-danger {
             font-size: 13px;
             margin-bottom: 10px;
@@ -81,32 +69,19 @@
 <body>
     <form id="form1" runat="server">
         <div class="login-card">
-            <!-- Logo -->
             <img src="pialogo2.png" alt="PIA Logo" />
-
-            <!-- Heading -->
             <h2>PIA Award+Plus</h2>
             <p>Admin Login</p>
-
-            <!-- Error Message -->
             <asp:Label ID="lblMessage" runat="server" CssClass="text-danger" />
-
-            <!-- Username -->
             <div class="mb-3 text-start">
                 <asp:TextBox ID="txtUsername" runat="server" placeholder="Username" CssClass="form-control" />
             </div>
-
-            <!-- Password -->
             <div class="mb-3 text-start">
                 <asp:TextBox ID="txtPassword" runat="server" TextMode="Password" placeholder="Password" CssClass="form-control" />
             </div>
-
-            <!-- Login Button -->
             <asp:Button ID="btnLogin" runat="server" Text="Login" OnClick="btnLogin_Click" CssClass="btn btn-login" />
         </div>
     </form>
-
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

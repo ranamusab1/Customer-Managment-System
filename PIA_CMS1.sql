@@ -1,77 +1,118 @@
--- Create Database
-CREATE DATABASE PIA_CMS;
-GO
 
-USE PIA_CMS;
-GO
 
--- Admins Table (Updated with Name column)
-CREATE TABLE Admins (
-    AdminID INT IDENTITY PRIMARY KEY,
-    Username NVARCHAR(50),
-    Name NVARCHAR(100), -- Added Name field
-    Email NVARCHAR(100),
-    Password NVARCHAR(50)
-);
 
--- EmailsSent Table
-CREATE TABLE EmailsSent (
-    EmailID INT IDENTITY PRIMARY KEY,
-    UserID NVARCHAR(50),
-    EmailFrom NVARCHAR(100),
-    EmailTo NVARCHAR(100),
-    EmailSubject NVARCHAR(200),
-    EmailBody NVARCHAR(MAX),
-    SentDate DATETIME,
-    RefNo NVARCHAR(50),
-    MembershipNo NVARCHAR(50)
-);
+CREATE TABLE [dbo].[admin_login](
+    [sno] [int] IDENTITY(1,1) NOT NULL,
+    [user_name] [varchar](30) NULL,
+    [password] [varchar](30) NULL,
+    [login_id] [varchar](50) NULL,
+    [enable] [int] NULL,
+    [station_id] [varchar](50) NULL,
+    [ftl] [int] NULL,
+    [search] [int] NULL,
+    [ip] [varchar](50) NULL,
+    [OlReq] [decimal](1, 0) NULL,
+    [LastLogin] [datetime] NULL,
+    [logincount] [int] NULL,
+    [creation_date] [datetime] NULL,
+    [EMAIL] [varchar](50) NULL,
+    [phone_no] [varchar](20) NULL,
+    [mobile] [varchar](20) NULL,
+    [Authorized_Station_ID] [varchar](20) NULL,
+    [OnlineRedemption_Allow] [varchar](1) NULL,
+    [NameOfEmployee] [varchar](30) NULL,
+    [User_Authorized_To_Create_Subuser] [varchar](1) NULL,
+    [Station_Code] [varchar](15) NULL,
+    [pwd_change_dt] [datetime] NULL,
+    [PIN_View_Allowed] [int] NULL,
+    [close_dt] [datetime] NULL,
+    [API_token] [varchar](50) NULL,
+ CONSTRAINT [PK_admin_login] PRIMARY KEY CLUSTERED 
+(
+    [sno] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
 
--- Complaints Table
-CREATE TABLE Complaints (
-    ComplaintID INT IDENTITY PRIMARY KEY,
-    TicketNo NUMERIC(10, 0),
-    MembershipNo NVARCHAR(250),
-    RequestDate SMALLDATETIME,
-    Category NVARCHAR(50),
-    Subject NVARCHAR(1600),
-    Status NVARCHAR(1), -- 'O' for Open, 'C' for Closed
-    UpdateDate SMALLDATETIME,
-    UpdatedBy NVARCHAR(50),
-    ForwardedTo NVARCHAR(50),
-    ForwardedDate SMALLDATETIME,
-    ForwardRemarks NVARCHAR(250),
-    ForwardedBy NVARCHAR(50),
-    Email NVARCHAR(200),
-    TopCategory NVARCHAR(30),
-    CorporateDetails NVARCHAR(12),
-    Urgent NVARCHAR(5),
-    ReceivedFrom NVARCHAR(25),
-    PointsExp NVARCHAR(1),
-    Tier NVARCHAR(1),
-    DownloadDateTime DATETIME,
-    HititRefNo NVARCHAR(50),
-    Body NVARCHAR(MAX)
-);
 
--- Insert Sample Data
-INSERT INTO Admins (Username, Name, Email, Password)
+INSERT INTO admin_login (user_name, password, login_id, enable, EMAIL, NameOfEmployee, creation_date)
 VALUES 
-('admin1', 'Rana Musab', 'admin1@pia.com', 'pass123'),
-('admin2', 'Abdullah Rashid', 'admin2@pia.com', 'pass456');
+    ('admin1', 'admin123', 'admin1@pia.com', 1, 'admin1@pia.com', 'Admin One', GETDATE()),
+    ('admin2', 'admin123', 'admin2@pia.com', 1, 'admin2@pia.com', 'Admin Two', GETDATE());
 
-SELECT * FROM Admins;
 
-INSERT INTO Complaints (TicketNo, MembershipNo, RequestDate, Category, Subject, Status, Email, ReceivedFrom, Body)
+	select * from [admin_login];
+
+
+CREATE TABLE [dbo].[cms](
+    [tkt_no] [numeric](10, 0) NULL,
+    [ffnum] [varchar](250) NULL,
+    [Req_Date] [smalldatetime] NULL,
+    [Category] [varchar](50) NULL,
+    [Subject] [varchar](1600) NULL,
+    [cstatus] [varchar](1) NULL,
+    [UpdateDate] [smalldatetime] NULL,
+    [UpdateBy] [varchar](50) NULL,
+    [fwd_to] [varchar](50) NULL,
+    [fwd_date] [smalldatetime] NULL,
+    [fwd_remarks] [varchar](250) NULL,
+    [fwd_by] [varchar](50) NULL,
+    [attachments] [varchar](100) NULL,
+    [email] [varchar](3000) NULL,
+    [TopCategory] [varchar](30) NULL,
+    [CorporateDetails] [varchar](12) NULL,
+    [urgent] [varchar](5) NULL,
+    [Req_By] [varchar](25) NULL,
+    [PointsExp] [varchar](1) NULL,
+    [tier] [varchar](1) NULL,
+    [download_datetime] [datetime] NULL,
+    [hitit_ref_no] [varchar](50) NULL
+) ON [PRIMARY]
+
+
+INSERT INTO cms (tkt_no, ffnum, Req_Date, Category, Subject, cstatus, email, Req_By)
 VALUES 
-(1001, 'PIA123456', GETDATE()-10, 'Missing Miles', 'Missing miles on flight PK123', 'O', 'customer@pia.com', 'Customer', 'Dear PIA, I did not receive miles for my recent flight.'),
-(1002, 'PIA789012', GETDATE()-5, 'Redemption', 'Upgrade issue', 'O', 'customer2@pia.com', 'Customer', 'Unable to upgrade my ticket.');
+    (1001, 'MEM001', GETDATE(), 'Missing Miles', 'Test Complaint', 'O', 'test@pia.com', 'Test User'),
+    (1002, 'MEM002', GETDATE(), 'Service Issue', 'Test Complaint 2', 'O', 'test2@pia.com', 'Test User 2');
 
-SELECT * FROM Complaints;
 
-INSERT INTO EmailsSent (UserID, EmailFrom, EmailTo, EmailSubject, EmailBody, SentDate, MembershipNo)
+select * from cms;
+
+
+CREATE TABLE [dbo].[sendmaillist](
+    [sno] [int] NULL,
+    [userid] [varchar](50) NULL,
+    [senddate] [smalldatetime] NULL,
+    [emlsub] [varchar](100) NULL,
+    [sendto] [varchar](50) NULL,
+    [cc] [varchar](250) NULL,
+    [ffnum] [varchar](9) NULL
+) ON [PRIMARY]
+
+
+INSERT INTO sendmaillist (sno, userid, senddate, emlsub, sendto, ffnum)
 VALUES 
-('admin1', 'admin@pia.com', 'customer@pia.com', 'Re: Missing Miles', 'We are looking into your issue.', GETDATE()-1, 'PIA123456');
+    (1, 'admin1', GETDATE(), 'Test Reply', 'test@pia.com', 'MEM001'),
+    (2, 'admin2', GETDATE(), 'Fwd: Test Complaint', 'admin1@pia.com', 'MEM001');
 
-SELECT * FROM EmailsSent;
-drop table Complaints;
+
+select * from sendmaillist;
+
+CREATE TABLE [dbo].[cms_fwd_remarks](
+    [sno] [int] IDENTITY(1,1) NOT NULL,
+    [fwd_to] [varchar](50) NULL,
+    [fwd_by] [varchar](50) NULL,
+    [fwd_date] [smalldatetime] NULL,
+    [remarks] [varchar](255) NULL,
+    [tkt_no] [int] NULL
+) ON [PRIMARY]
+
+ALTER TABLE [dbo].[cms_fwd_remarks] ADD CONSTRAINT PK_cms_fwd_remarks PRIMARY KEY (sno);
+
+
+INSERT INTO cms_fwd_remarks (fwd_to, fwd_by, fwd_date, remarks, tkt_no)
+VALUES 
+    ('Admin Two', 'admin1', GETDATE(), 'Urgent: Please review', 1001),
+    ('Admin One', 'admin2', GETDATE(), 'Follow-up required', 1001);
+
+	select * from cms_fwd_remarks;
+	SELECT sno, NameOfEmployee FROM admin_login WHERE enable = 1 AND NameOfEmployee IS NOT NULL AND NameOfEmployee != '' ORDER BY NameOfEmployee;

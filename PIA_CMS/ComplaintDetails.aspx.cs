@@ -44,24 +44,23 @@ namespace PIA_CMS
                 string connectionString = ConfigurationManager.ConnectionStrings["dbConn"].ConnectionString;
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
-                    string query = "SELECT TicketNo, MembershipNo, Category, Subject, Body, RequestDate, Email, Status, ReceivedFrom FROM Complaints WHERE ComplaintID = @ComplaintID";
+                    string query = "SELECT tkt_no, ffnum, Category, Subject, cstatus, Req_Date, email, Req_By FROM cms WHERE tkt_no = @Tkt_no";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@ComplaintID", complaintId);
+                        cmd.Parameters.AddWithValue("@Tkt_no", complaintId);
                         con.Open();
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             if (reader.Read())
                             {
-                                lblComplaintDetails.Text = $"<strong>Ticket No:</strong> {reader["TicketNo"]}<br/>" +
-                                                          $"<strong>Membership No:</strong> {reader["MembershipNo"]}<br/>" +
+                                lblComplaintDetails.Text = $"<strong>Ticket No:</strong> {reader["tkt_no"]}<br/>" +
+                                                          $"<strong>Membership No:</strong> {reader["ffnum"]}<br/>" +
                                                           $"<strong>Category:</strong> {reader["Category"]}<br/>" +
                                                           $"<strong>Subject:</strong> {reader["Subject"]}<br/>" +
-                                                          $"<strong>Details:</strong> {reader["Body"]}<br/>" +
-                                                          $"<strong>Date:</strong> {reader["RequestDate"]}<br/>" +
-                                                          $"<strong>Email:</strong> {reader["Email"]}<br/>" +
-                                                          $"<strong>Status:</strong> {(reader["Status"].ToString() == "O" ? "Open" : "Closed")}<br/>" +
-                                                          $"<strong>Received From:</strong> {reader["ReceivedFrom"]}";
+                                                          $"<strong>Details:</strong> {(reader["cstatus"].ToString() == "O" ? "Open Complaint" : "Closed Complaint")}<br/>" +
+                                                          $"<strong>Date:</strong> {reader["Req_Date"]}<br/>" +
+                                                          $"<strong>Email:</strong> {reader["email"]}<br/>" +
+                                                          $"<strong>Received From:</strong> {reader["Req_By"]}";
                             }
                             else
                             {
@@ -80,17 +79,17 @@ namespace PIA_CMS
         }
 
         [WebMethod]
-        public static string GetComplaintDetails(int complaintId)
+        public static string GetComplaintDetails(int tkt_no)
         {
             try
             {
                 string connectionString = ConfigurationManager.ConnectionStrings["dbConn"].ConnectionString;
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
-                    string query = "SELECT TicketNo, MembershipNo, Category, Subject, Body, RequestDate, Email, Status, ReceivedFrom FROM Complaints WHERE ComplaintID = @ComplaintID";
+                    string query = "SELECT tkt_no, ffnum, Category, Subject, cstatus, Req_Date, email, Req_By FROM cms WHERE tkt_no = @Tkt_no";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@ComplaintID", complaintId);
+                        cmd.Parameters.AddWithValue("@Tkt_no", tkt_no);
                         con.Open();
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
@@ -99,15 +98,14 @@ namespace PIA_CMS
                                 return $"<div class='card'>" +
                                        "<div class='card-header'>Complaint Information</div>" +
                                        "<div class='card-body'>" +
-                                       $"<strong>Ticket No:</strong> {reader["TicketNo"]}<br/>" +
-                                       $"<strong>Membership No:</strong> {reader["MembershipNo"]}<br/>" +
+                                       $"<strong>Ticket No:</strong> {reader["tkt_no"]}<br/>" +
+                                       $"<strong>Membership No:</strong> {reader["ffnum"]}<br/>" +
                                        $"<strong>Category:</strong> {reader["Category"]}<br/>" +
                                        $"<strong>Subject:</strong> {reader["Subject"]}<br/>" +
-                                       $"<strong>Details:</strong> {reader["Body"]}<br/>" +
-                                       $"<strong>Date:</strong> {reader["RequestDate"]}<br/>" +
-                                       $"<strong>Email:</strong> {reader["Email"]}<br/>" +
-                                       $"<strong>Status:</strong> {(reader["Status"].ToString() == "O" ? "Open" : "Closed")}<br/>" +
-                                       $"<strong>Received From:</strong> {reader["ReceivedFrom"]}" +
+                                       $"<strong>Details:</strong> {(reader["cstatus"].ToString() == "O" ? "Open Complaint" : "Closed Complaint")}<br/>" +
+                                       $"<strong>Date:</strong> {reader["Req_Date"]}<br/>" +
+                                       $"<strong>Email:</strong> {reader["email"]}<br/>" +
+                                       $"<strong>Received From:</strong> {reader["Req_By"]}" +
                                        "</div></div>";
                             }
                             else

@@ -6,7 +6,7 @@ using System.Web.Services;
 
 namespace PIA_CMS
 {
-    public partial class EmailDetails : System.Web.UI.Page
+    public partial class EmailDetails : Page
     {
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -44,22 +44,21 @@ namespace PIA_CMS
                 string connectionString = ConfigurationManager.ConnectionStrings["dbConn"].ConnectionString;
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
-                    string query = "SELECT EmailFrom, EmailTo, EmailSubject, EmailBody, SentDate, MembershipNo, UserID FROM EmailsSent WHERE EmailID = @EmailID";
+                    string query = "SELECT sno, userid, senddate, emlsub, sendto, ffnum FROM sendmaillist WHERE sno = @Sno";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@EmailID", emailId);
+                        cmd.Parameters.AddWithValue("@Sno", emailId);
                         con.Open();
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             if (reader.Read())
                             {
-                                lblEmailDetails.Text = $"<strong>From:</strong> {reader["EmailFrom"]}<br/>" +
-                                                       $"<strong>To:</strong> {reader["EmailTo"]}<br/>" +
-                                                       $"<strong>Subject:</strong> {reader["EmailSubject"]}<br/>" +
-                                                       $"<strong>Body:</strong> {reader["EmailBody"]}<br/>" +
-                                                       $"<strong>Sent:</strong> {reader["SentDate"]}<br/>" +
-                                                       $"<strong>Membership No:</strong> {reader["MembershipNo"]}<br/>" +
-                                                       $"<strong>User ID:</strong> {reader["UserID"]}";
+                                lblEmailDetails.Text = $"<strong>Email ID:</strong> {reader["sno"]}<br/>" +
+                                                      $"<strong>User ID:</strong> {reader["userid"]}<br/>" +
+                                                      $"<strong>Send Date:</strong> {reader["senddate"]}<br/>" +
+                                                      $"<strong>Subject:</strong> {reader["emlsub"]}<br/>" +
+                                                      $"<strong>To:</strong> {reader["sendto"]}<br/>" +
+                                                      $"<strong>Membership No:</strong> {reader["ffnum"]}";
                             }
                             else
                             {
@@ -78,17 +77,17 @@ namespace PIA_CMS
         }
 
         [WebMethod]
-        public static string GetEmailDetails(int emailId)
+        public static string GetEmailDetails(int sno)
         {
             try
             {
                 string connectionString = ConfigurationManager.ConnectionStrings["dbConn"].ConnectionString;
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
-                    string query = "SELECT EmailFrom, EmailTo, EmailSubject, EmailBody, SentDate, MembershipNo, UserID FROM EmailsSent WHERE EmailID = @EmailID";
+                    string query = "SELECT sno, userid, senddate, emlsub, sendto, ffnum FROM sendmaillist WHERE sno = @Sno";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@EmailID", emailId);
+                        cmd.Parameters.AddWithValue("@Sno", sno);
                         con.Open();
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
@@ -97,13 +96,12 @@ namespace PIA_CMS
                                 return $"<div class='card'>" +
                                        "<div class='card-header'>Email Information</div>" +
                                        "<div class='card-body'>" +
-                                       $"<strong>From:</strong> {reader["EmailFrom"]}<br/>" +
-                                       $"<strong>To:</strong> {reader["EmailTo"]}<br/>" +
-                                       $"<strong>Subject:</strong> {reader["EmailSubject"]}<br/>" +
-                                       $"<strong>Body:</strong> {reader["EmailBody"]}<br/>" +
-                                       $"<strong>Sent:</strong> {reader["SentDate"]}<br/>" +
-                                       $"<strong>Membership No:</strong> {reader["MembershipNo"]}<br/>" +
-                                       $"<strong>User ID:</strong> {reader["UserID"]}" +
+                                       $"<strong>Email ID:</strong> {reader["sno"]}<br/>" +
+                                       $"<strong>User ID:</strong> {reader["userid"]}<br/>" +
+                                       $"<strong>Send Date:</strong> {reader["senddate"]}<br/>" +
+                                       $"<strong>Subject:</strong> {reader["emlsub"]}<br/>" +
+                                       $"<strong>To:</strong> {reader["sendto"]}<br/>" +
+                                       $"<strong>Membership No:</strong> {reader["ffnum"]}" +
                                        "</div></div>";
                             }
                             else

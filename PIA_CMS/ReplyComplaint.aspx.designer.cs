@@ -24,39 +24,39 @@ namespace PIA_CMS
         protected global::System.Web.UI.WebControls.Label lblMsg;
 
         /// <summary>
-        /// txtEmailTo control.
+        /// txtReplyEmail control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtEmailTo;
+        protected global::System.Web.UI.WebControls.TextBox txtReplyEmail;
 
         /// <summary>
-        /// txtSubject control.
+        /// txtReplySubject control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtSubject;
+        protected global::System.Web.UI.WebControls.TextBox txtReplySubject;
 
         /// <summary>
-        /// txtBody control.
+        /// txtReplyBody control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtBody;
+        protected global::System.Web.UI.WebControls.TextBox txtReplyBody;
 
         /// <summary>
-        /// btnSend control.
+        /// btnReplySend control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSend;
+        protected global::System.Web.UI.WebControls.Button btnReplySend;
     }
 }

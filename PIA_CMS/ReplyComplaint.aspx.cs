@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.IO;
 using System.Web.UI;
 
 namespace PIA_CMS
 {
-    public partial class ReplyComplaint : System.Web.UI.Page
+    public partial class ReplyComplaint : Page
     {
+        private static readonly string DataPath = @"C:\PIA";
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["AdminUser"] == null)
@@ -35,18 +38,18 @@ namespace PIA_CMS
                 string connectionString = ConfigurationManager.ConnectionStrings["dbConn"].ConnectionString;
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
-                    string query = "SELECT Email, Subject, Body, MembershipNo FROM Complaints WHERE ComplaintID = @ComplaintID";
+                    string query = "SELECT email, Subject, cstatus, ffnum FROM cms WHERE tkt_no = @Tkt_no";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@ComplaintID", complaintId);
+                        cmd.Parameters.AddWithValue("@Tkt_no", complaintId);
                         con.Open();
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             if (reader.Read())
                             {
-                                txtEmailTo.Text = reader["Email"].ToString();
-                                txtSubject.Text = $"Re: {reader["Subject"]}";
-                                txtBody.Text = $"\n\n--- Original Complaint ---\nSubject: {reader["Subject"]}\nDetails: {reader["Body"]}\nMembership No: {reader["MembershipNo"]}";
+                                txtReplyEmail.Text = reader["email"].ToString();
+                                txtReplySubject.Text = $"Re: {reader["Subject"]}";
+                                txtReplyBody.Text = $"\n\n--- Original Complaint ---\nSubject: {reader["Subject"]}\nDetails: {(reader["cstatus"].ToString() == "O" ? "Open Complaint" : "Closed Complaint")}\nMembership No: {reader["ffnum"]}";
                             }
                             else
                             {
@@ -64,33 +67,51 @@ namespace PIA_CMS
             }
         }
 
-        protected void btnSend_Click(object sender, EventArgs e)
+        protected void btnReplySend_Click(object sender, EventArgs e)
         {
             try
             {
+                string complaintId = Request.QueryString["complaintId"];
                 string connectionString = ConfigurationManager.ConnectionStrings["dbConn"].ConnectionString;
+                string ffnum = "";
                 using (SqlConnection con = new SqlConnection(connectionString))
                 {
-                    string query = "INSERT INTO EmailsSent (EmailFrom, EmailTo, EmailSubject, EmailBody, SentDate, UserID, MembershipNo) VALUES (@EmailFrom, @EmailTo, @EmailSubject, @EmailBody, @SentDate, @UserID, @MembershipNo)";
+                    string query = "SELECT ffnum FROM cms WHERE tkt_no = @Tkt_no";
                     using (SqlCommand cmd = new SqlCommand(query, con))
                     {
-                        cmd.Parameters.AddWithValue("@EmailFrom", Session["AdminUser"].ToString() + "@pia.com");
-                        cmd.Parameters.AddWithValue("@EmailTo", txtEmailTo.Text);
-                        cmd.Parameters.AddWithValue("@EmailSubject", txtSubject.Text);
-                        cmd.Parameters.AddWithValue("@EmailBody", txtBody.Text);
-                        cmd.Parameters.AddWithValue("@SentDate", DateTime.Now);
-                        cmd.Parameters.AddWithValue("@UserID", Session["AdminUser"].ToString());
-                        cmd.Parameters.AddWithValue("@MembershipNo", "");
+                        cmd.Parameters.AddWithValue("@Tkt_no", complaintId);
+                        con.Open();
+                        ffnum = (string)cmd.ExecuteScalar();
+                        con.Close();
+                    }
+
+                    query = "INSERT INTO sendmaillist (userid, senddate, emlsub, sendto, ffnum) VALUES (@Userid, @Senddate, @Emlsub, @Sendto, @Ffnum); " +
+                            "UPDATE cms SET cstatus = 'C', UpdateDate = @UpdateDate, UpdateBy = @UpdateBy WHERE tkt_no = @Tkt_no";
+                    using (SqlCommand cmd = new SqlCommand(query, con))
+                    {
+                        cmd.Parameters.AddWithValue("@Userid", Session["AdminUser"].ToString());
+                        cmd.Parameters.AddWithValue("@Senddate", DateTime.Now);
+                        cmd.Parameters.AddWithValue("@Emlsub", txtReplySubject.Text);
+                        cmd.Parameters.AddWithValue("@Sendto", txtReplyEmail.Text);
+                        cmd.Parameters.AddWithValue("@Ffnum", ffnum);
+                        cmd.Parameters.AddWithValue("@UpdateDate", DateTime.Now);
+                        cmd.Parameters.AddWithValue("@UpdateBy", Session["AdminUser"].ToString());
+                        cmd.Parameters.AddWithValue("@Tkt_no", complaintId);
                         con.Open();
                         cmd.ExecuteNonQuery();
                     }
                 }
+
+                string filePath = Path.Combine(DataPath, $"{complaintId}.txt");
+                string replyContent = $"\n\n--- Reply by {Session["AdminUser"]} on {DateTime.Now:yyyy-MM-dd HH:mm:ss} ---\nSubject: {txtReplySubject.Text}\nBody: {txtReplyBody.Text}";
+                File.AppendAllText(filePath, replyContent);
+
                 lblMsg.Text = "Reply sent successfully.";
                 lblMsg.CssClass = "alert alert-success";
                 lblMsg.Visible = true;
-                txtEmailTo.Text = "";
-                txtSubject.Text = "";
-                txtBody.Text = "";
+                txtReplyEmail.Text = "";
+                txtReplySubject.Text = "";
+                txtReplyBody.Text = "";
             }
             catch (Exception ex)
             {

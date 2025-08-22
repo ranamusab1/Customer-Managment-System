@@ -1,10 +1,6 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="EmailDetails.aspx.cs" Inherits="PIA_CMS.EmailDetails" MasterPageFile="~/Site.master" %>
 
-<!DOCTYPE html>
-<html>
-<head runat="server">
-    <title>Email Details</title>
-    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <style>
         .card {
             border: 1px solid #ddd;
@@ -23,21 +19,19 @@
             margin-top: 20px;
         }
     </style>
-</head>
-<body>
-    <form id="form1" runat="server">
-        <div class="container">
-            <asp:Label ID="lblMsg" runat="server" CssClass="alert alert-danger" Visible="False" />
-            <asp:HiddenField ID="hfEmailID" runat="server" />
-            <div class="card">
-                <div class="card-header">
-                    Email Information
-                </div>
-                <div class="card-body">
-                    <asp:Label ID="lblEmailDetails" runat="server" />
-                </div>
+</asp:Content>
+
+<asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
+    <div class="container">
+        <asp:Label ID="lblMsg" runat="server" CssClass="alert alert-danger" Visible="False" />
+        <asp:HiddenField ID="hfEmailID" runat="server" />
+        <div class="card">
+            <div class="card-header">
+                Email Information
+            </div>
+            <div class="card-body">
+                <asp:Label ID="lblEmailDetails" runat="server" />
             </div>
         </div>
-    </form>
-</body>
-</html>
+    </div>
+</asp:Content>

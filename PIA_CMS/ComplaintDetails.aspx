@@ -1,10 +1,6 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="ComplaintDetails.aspx.cs" Inherits="PIA_CMS.ComplaintDetails" MasterPageFile="~/Site.master" %>
 
-<!DOCTYPE html>
-<html>
-<head runat="server">
-    <title>Complaint Details</title>
-    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <style>
         .card {
             border: 1px solid #ddd;
@@ -23,23 +19,21 @@
             margin-top: 20px;
         }
     </style>
-</head>
-<body>
-    <form id="form1" runat="server">
-        <div class="container">
-            <asp:Label ID="lblMsg" runat="server" CssClass="alert alert-danger" Visible="False" />
-            <asp:HiddenField ID="hfComplaintID" runat="server" />
-            <div class="card">
-                <div class="card-header">
-                    Complaint Information
-                </div>
-                <div class="card-body">
-                    <asp:Label ID="lblComplaintDetails" runat="server" />
-                    <asp:Button ID="btnReply" runat="server" Text="Reply" CssClass="btn btn-primary mt-2" OnClick="btnReply_Click" />
-                    <asp:Button ID="btnForward" runat="server" Text="Forward" CssClass="btn btn-info mt-2" OnClick="btnForward_Click" />
-                </div>
+</asp:Content>
+
+<asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
+    <div class="container">
+        <asp:Label ID="lblMsg" runat="server" CssClass="alert alert-danger" Visible="False" />
+        <asp:HiddenField ID="hfComplaintID" runat="server" />
+        <div class="card">
+            <div class="card-header">
+                Complaint Information
+            </div>
+            <div class="card-body">
+                <asp:Label ID="lblComplaintDetails" runat="server" />
             </div>
         </div>
-    </form>
-</body>
-</html>
+        <asp:Button ID="btnReply" runat="server" Text="Reply" CssClass="btn btn-primary mt-3" OnClick="btnReply_Click" />
+        <asp:Button ID="btnForward" runat="server" Text="Forward" CssClass="btn btn-info mt-3" OnClick="btnForward_Click" />
+    </div>
+</asp:Content>

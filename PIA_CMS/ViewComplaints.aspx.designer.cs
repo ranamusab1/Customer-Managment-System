@@ -60,6 +60,15 @@ namespace PIA_CMS
         protected global::System.Web.UI.WebControls.Panel pnlComplaintDetails;
 
         /// <summary>
+        /// hfComplaintId control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfComplaintId;
+
+        /// <summary>
         /// complaintDetailsContent control.
         /// </summary>
         /// <remarks>
@@ -112,15 +121,6 @@ namespace PIA_CMS
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.DropDownList ddlForwardTo;
-
-        /// <summary>
-        /// txtForwardEmail control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtForwardEmail;
 
         /// <summary>
         /// txtForwardRemarks control.

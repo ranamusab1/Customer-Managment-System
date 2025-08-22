@@ -1,15 +1,15 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="ReceiveEmail.aspx.cs" Inherits="PIA_CMS.ReceiveEmail" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="ReceiveEmail.aspx.cs" Inherits="PIA_CMS.ReceiveEmail" MasterPageFile="~/Site.master" %>
 
-<!DOCTYPE html>
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <style>
+        .alert {
+            margin-top: 20px;
+        }
+    </style>
+</asp:Content>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-    <title></title>
-</head>
-<body>
-    <form id="form1" runat="server">
-        <div>
-        </div>
-    </form>
-</body>
-</html>
+<asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
+    <div class="container">
+        <asp:Label ID="lblMsg" runat="server" CssClass="alert alert-danger" Visible="False" />
+    </div>
+</asp:Content>

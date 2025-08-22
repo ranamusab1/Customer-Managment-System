@@ -2,49 +2,68 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <style>
-        .modal-body {
-            max-height: 500px;
-            overflow-y: auto;
-        }
         .bg-darkgreen {
             background-color: darkgreen;
             color: white;
+        }
+        .modal-body {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .table th, .table td {
+            vertical-align: middle;
         }
         h2 {
             color: #004d40;
             font-weight: 600;
         }
-        .btn {
+        .btn-success, .btn-primary {
             transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;
-        }
-        .btn {
             background-color: darkgreen !important;
             color: white !important;
-            border-color: darkgreen !important;
+            border-color: darkgreen;
         }
-        .btn:hover {
+        .btn-success:hover, .btn-primary:hover {
             background-color: white !important;
             color: darkgreen !important;
-            border-color: darkgreen !important;
+            border-color: darkgreen;
+        }
+        .conversation-entry {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+            margin-bottom: 10px;
+        }
+        .conversation-header {
+            font-weight: bold;
+            color: #004d40;
+            margin-bottom: 5px;
+        }
+        .conversation-body {
+            margin: 0;
+            padding-left: 10px;
+            color: #333;
+        }
+        .conversation-subject {
+            font-style: italic;
+            color: #555;
         }
     </style>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
     <div class="container">
-        <h2>View Sent Emails</h2>
-
+        <h2>View Emails</h2>
         <!-- Filter -->
         <div class="row mb-3">
             <div class="col-md-4">
                 <asp:DropDownList ID="ddlFilterBy" runat="server" CssClass="form-control select2">
                     <asp:ListItem Text="Select Filter" Value="" />
-                    <asp:ListItem Text="Date" Value="SentDate" />
-                    <asp:ListItem Text="Subject" Value="EmailSubject" />
-                    <asp:ListItem Text="User ID" Value="UserID" />
-                    <asp:ListItem Text="Ref No" Value="RefNo" />
-                    <asp:ListItem Text="Sent To" Value="EmailTo" />
-                    <asp:ListItem Text="Membership No" Value="MembershipNo" />
+                    <asp:ListItem Text="S.No" Value="sno" />
+                    <asp:ListItem Text="Sent By" Value="userid" />
+                    <asp:ListItem Text="Sent Date" Value="senddate" />
+                    <asp:ListItem Text="Subject" Value="emlsub" />
+                    <asp:ListItem Text="Sent To" Value="sendto" />
+                    <asp:ListItem Text="Membership No" Value="ffnum" />
                 </asp:DropDownList>
             </div>
             <div class="col-md-4">
@@ -56,23 +75,23 @@
         </div>
 
         <!-- Grid -->
-        <asp:GridView ID="gvEmails" runat="server" CssClass="table table-striped table-bordered" AutoGenerateColumns="False" OnRowCommand="gvEmails_RowCommand">
+        <asp:GridView ID="gvEmails" runat="server" CssClass="table table-striped table-bordered" AutoGenerateColumns="False" DataKeyNames="sno" OnRowCommand="gvEmails_RowCommand">
             <Columns>
-                <asp:BoundField DataField="EmailID" HeaderText="S.No" />
-                <asp:BoundField DataField="UserID" HeaderText="User ID" />
-                <asp:BoundField DataField="EmailFrom" HeaderText="From" />
-                <asp:BoundField DataField="EmailTo" HeaderText="To" />
-                <asp:BoundField DataField="EmailSubject" HeaderText="Subject" />
-                <asp:BoundField DataField="SentDate" HeaderText="Date Sent" DataFormatString="{0:yyyy-MM-dd}" />
+                <asp:BoundField DataField="sno" HeaderText="S.No" />
+                <asp:BoundField DataField="userid" HeaderText="Sent By" />
+                <asp:BoundField DataField="senddate" HeaderText="Sent Date" DataFormatString="{0:yyyy-MM-dd HH:mm}" />
+                <asp:BoundField DataField="emlsub" HeaderText="Subject" />
+                <asp:BoundField DataField="sendto" HeaderText="Sent To" />
+                <asp:BoundField DataField="ffnum" HeaderText="Membership No" />
                 <asp:TemplateField HeaderText="Action">
                     <ItemTemplate>
-                        <asp:Button ID="btnViewDetails" runat="server" Text="View" CssClass="btn btn-primary btn-sm" CommandName="ViewDetails" CommandArgument='<%# Eval("EmailID") %>' />
+                        <asp:Button ID="btnViewDetails" runat="server" Text="View" CssClass="btn btn-primary btn-sm" CommandName="ViewDetails" CommandArgument='<%# Container.DataItemIndex %>' />
                     </ItemTemplate>
                 </asp:TemplateField>
             </Columns>
         </asp:GridView>
 
-        <!-- Modal -->
+        <!-- Email Details Modal -->
         <asp:Panel ID="pnlEmailDetails" runat="server" CssClass="modal fade" Style="display: none;" ClientIDMode="Static">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -82,6 +101,9 @@
                     </div>
                     <div class="modal-body">
                         <div id="emailDetailsContent" runat="server" ClientIDMode="Static"></div>
+                        <hr />
+                        <h6>Email Content</h6>
+                        <div id="emailContent" class="border p-3 mb-3"></div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -89,38 +111,45 @@
                 </div>
             </div>
         </asp:Panel>
+    </div>
 
-        <script type="text/javascript">
-            $(document).ready(function () {
-                try {
-                    $('.select2').select2();
-                } catch (e) {
-                    console.error('Error initializing Select2: ', e);
-                }
-            });
-
-            function showEmailDetailsModal(emailId) {
-                try {
-                    $.ajax({
-                        url: 'EmailDetails.aspx/GetEmailDetails',
-                        type: 'POST',
-                        contentType: 'application/json; charset=utf-8',
-                        data: JSON.stringify({ emailId: emailId }),
-                        dataType: 'json',
-                        success: function (response) {
-                            $('#emailDetailsContent').html(response.d);
-                            $('#pnlEmailDetails').modal('show');
-                            console.log('Email details modal opened');
-                        },
-                        error: function (xhr, status, error) {
-                            console.error('Error loading email details: ', error);
-                            alert('Error loading email details. Check console for details.');
-                        }
-                    });
-                } catch (e) {
-                    console.error('Error opening email details modal: ', e);
-                    alert('Error opening email details modal. Check console for details.');
-                }
+    <script type="text/javascript">
+        $(document).ready(function () {
+            try {
+                $('.select2').select2({
+                    placeholder: "Select an option",
+                    allowClear: true
+                });
+                console.log('Select2 initialized on page load.');
+            } catch (e) {
+                console.error('Error initializing Select2: ', e);
+                alert('Select2 initialization failed.');
             }
-        </script>
-    </asp:Content>
+        });
+
+        function showEmailDetailsModal(emailId) {
+            try {
+                $.ajax({
+                    url: 'ViewEmails.aspx/GetEmailDetails',
+                    type: 'POST',
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify({ sno: emailId }),
+                    dataType: 'json',
+                    success: function (response) {
+                        $('#emailDetailsContent').html(response.d.details);
+                        $('#emailContent').html(response.d.content);
+                        $('#pnlEmailDetails').modal('show');
+                        console.log('Email details modal opened for sno: ' + emailId);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error loading email details: ', error, xhr.responseText);
+                        alert('Error loading email details. Check console for details.');
+                    }
+                });
+            } catch (e) {
+                console.error('Error opening email details modal: ', e);
+                alert('Error opening email details modal. Check console for details.');
+            }
+        }
+    </script>
+</asp:Content>

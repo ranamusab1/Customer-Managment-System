@@ -3,7 +3,7 @@ using System.Web.UI;
 
 namespace PIA_CMS
 {
-    public partial class Site : System.Web.UI.MasterPage
+    public partial class Site : MasterPage
     {
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -11,7 +11,7 @@ namespace PIA_CMS
             {
                 Response.Redirect("Login.aspx");
             }
-            lblAdmin.Text = Session["AdminUser"].ToString();
+            lblAdmin.Text = Session["NameOfEmployee"]?.ToString() ?? "Admin";
         }
 
         protected void lnkLogout_Click(object sender, EventArgs e)

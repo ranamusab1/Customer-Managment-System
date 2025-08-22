@@ -5,17 +5,11 @@
 <head runat="server">
     <title>PIA CMS</title>
     <asp:ContentPlaceHolder ID="head" runat="server" />
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
-    <!-- Select2 CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" integrity="sha512-nMNlpuaDPrqlEls3IX1gI0xEO16vZHBX8hz5GnVXYk0XVA5V4j+6Jq9KQN3o8F9fQ1uO68M6tNBa7BVC7wJ+0MQ==" crossorigin="anonymous" />
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <!-- Select2 JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js" integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0GZQ==" crossorigin="anonymous"></script>
-
+    <script src="bootstrap.bundle.min.js"></script>
+    <script src="jquery-3.5.1.min.js"></script>
+    <script src="select2.min.js"></script>
+    <link href="select2.min.css" rel="stylesheet" />
+    <link href="bootstrap.min.css" rel="stylesheet" />
     <style>
         body {
             margin: 0;
@@ -91,13 +85,10 @@
 <body>
     <form id="form1" runat="server">
         <asp:ScriptManager ID="ScriptManager1" runat="server" />
-
-        <!-- Navbar -->
         <nav class="navbar navbar-expand-lg navbar-custom">
             <div class="d-flex align-items-center">
                 <img src="pialogo1.png" alt="PIA Logo" />
             </div>
-
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ms-4 me-auto">
                     <li class="nav-item">
@@ -128,18 +119,20 @@
                             </li>
                         </ul>
                     </li>
+                    <li class="nav-item">
+                        <asp:LinkButton ID="lnkAddAdmin" runat="server" CssClass="nav-link" PostBackUrl="AddAdmin.aspx">Add Admin</asp:LinkButton>
+                    </li>
+                    <li class="nav-item">
+                        <asp:LinkButton ID="lnkManageUsers" runat="server" CssClass="nav-link" PostBackUrl="~/ManageUsers.aspx">Manage Users</asp:LinkButton>
+                    </li>
                 </ul>
                 <span class="nav-identity"><asp:Label ID="lblAdmin" runat="server" /></span>
                 <asp:LinkButton ID="lnkLogout" runat="server" CssClass="logout-btn" OnClick="lnkLogout_Click">Logout</asp:LinkButton>
             </div>
         </nav>
-
-        <!-- Main Content Area -->
         <div class="main-content">
             <asp:ContentPlaceHolder ID="MainContent" runat="server" />
         </div>
-
-        <!-- JavaScript for nested dropdowns -->
         <script>
             $(document).ready(function () {
                 try {
@@ -147,7 +140,6 @@
                 } catch (e) {
                     console.error('Error initializing Select2: ', e);
                 }
-
                 $('.dropdown-submenu a.dropdown-toggle').on('click', function (e) {
                     if (!$(this).next('ul').hasClass('show')) {
                         $(this).parents('.dropdown-menu').first().find('.show').removeClass('show');
@@ -159,7 +151,6 @@
                     });
                     return false;
                 });
-
                 $('.dropdown-menu').on('click', function (e) {
                     e.stopPropagation();
                 });

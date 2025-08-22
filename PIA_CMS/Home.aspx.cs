@@ -11,7 +11,6 @@ namespace PIA_CMS
             {
                 Response.Redirect("Login.aspx");
             }
-            // lblAdmin is in Site.master, no need to set it here
         }
     }
 }

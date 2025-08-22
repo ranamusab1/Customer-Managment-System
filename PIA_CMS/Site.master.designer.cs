@@ -51,6 +51,24 @@ namespace PIA_CMS
         protected global::System.Web.UI.WebControls.LinkButton lnkHome;
 
         /// <summary>
+        /// lnkAddAdmin control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnkAddAdmin;
+
+        /// <summary>
+        /// lnkManageUsers control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.LinkButton lnkManageUsers;
+
+        /// <summary>
         /// lblAdmin control.
         /// </summary>
         /// <remarks>

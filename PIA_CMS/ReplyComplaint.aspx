@@ -19,16 +19,16 @@
         <asp:Label ID="lblMsg" runat="server" CssClass="alert alert-danger" Visible="False" />
         <div class="form-group">
             <label>To:</label>
-            <asp:TextBox ID="txtEmailTo" runat="server" CssClass="form-control" ReadOnly="true" />
+            <asp:TextBox ID="txtReplyEmail" runat="server" CssClass="form-control" ReadOnly="true" />
         </div>
         <div class="form-group">
             <label>Subject:</label>
-            <asp:TextBox ID="txtSubject" runat="server" CssClass="form-control" />
+            <asp:TextBox ID="txtReplySubject" runat="server" CssClass="form-control" />
         </div>
         <div class="form-group">
             <label>Body:</label>
-            <asp:TextBox ID="txtBody" runat="server" TextMode="MultiLine" CssClass="form-control" Rows="8" />
+            <asp:TextBox ID="txtReplyBody" runat="server" TextMode="MultiLine" CssClass="form-control" Rows="6" />
         </div>
-        <asp:Button ID="btnSend" runat="server" Text="Send Reply" CssClass="btn btn-primary" OnClick="btnSend_Click" />
+        <asp:Button ID="btnReplySend" runat="server" Text="Send Reply" CssClass="btn btn-primary" OnClick="btnReplySend_Click" />
     </div>
 </asp:Content>

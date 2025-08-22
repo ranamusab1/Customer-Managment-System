@@ -26,7 +26,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
     <div class="container">
         <h2>Send Email</h2>
-        <asp:Label ID="lblMsg" runat="server" ForeColor="Green" />
+        <asp:Label ID="lblMsg" runat="server" CssClass="alert alert-danger" Visible="False" />
         <div class="form-group">
             <label>Membership ID</label>
             <asp:TextBox ID="txtMembershipId" runat="server" CssClass="form-control" />
